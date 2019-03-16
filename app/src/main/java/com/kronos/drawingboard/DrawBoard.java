@@ -6,6 +6,9 @@ import android.view.View;
 import android.widget.Toast;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
+import me.panavtec.drawableview.DrawableView;
+import me.panavtec.drawableview.DrawableViewConfig;
+
 public class DrawBoard extends AppCompatActivity {
 
     @Override
@@ -15,6 +18,20 @@ public class DrawBoard extends AppCompatActivity {
         Tools m_Tools = new Tools(this);
         setTools(m_Tools);
         setToolsAction(m_Tools);
+        init();
+    }
+
+    protected void init(){
+        DrawableView m_Draw = (DrawableView) findViewById(R.id.paintView);
+        DrawableViewConfig config = new DrawableViewConfig();
+        config.setStrokeColor(getResources().getColor(android.R.color.black));
+        config.setShowCanvasBounds(true); // If the view is bigger than canvas, with this the user will see the bounds (Recommended)
+        config.setStrokeWidth(20.0f);
+        config.setMinZoom(1.0f);
+        config.setMaxZoom(3.0f);
+        config.setCanvasHeight(1920);
+        config.setCanvasWidth(1080);
+        m_Draw.setConfig(config);
     }
 
     protected void setTools(Tools tools){
