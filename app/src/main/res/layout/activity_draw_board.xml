@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/RootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,18 +11,111 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <FrameLayout
+        android:id="@+id/menu_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/scrim"
+        android:visibility="invisible">
+
+        <com.ogaclejapan.arclayout.ArcLayout
+            android:id="@+id/arc_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:arc_axisRadius="@dimen/layout_child_offset_path"
+            app:arc_freeAngle="true"
+            app:arc_origin="center"
+            app:arc_radius="@dimen/layout_radius_path">
+
+            <Button
+                android:id="@+id/stroke_10"
+                style="@style/Item.Path"
+                android:text="10"
+                android:textColor="@color/path_orange"
+                app:arc_angle="0"/>
+
+            <Button
+                android:id="@+id/stroke_30"
+                style="@style/Item.Path"
+                android:text="30"
+                android:textColor="@color/path_orange"
+                app:arc_angle="30"/>
+
+            <Button
+                android:id="@+id/stroke_50"
+                style="@style/Item.Path"
+                android:text="50"
+                android:textColor="@color/path_orange"
+                app:arc_angle="60"/>
+
+            <Button
+                android:id="@+id/stroke_70"
+                style="@style/Item.Path"
+                android:text="70"
+                android:textColor="@color/path_orange"
+                app:arc_angle="90"/>
+            <Button
+                android:id="@+id/stroke_90"
+                style="@style/Item.Path"
+                android:text="90"
+                android:textColor="@color/path_orange"
+                app:arc_angle="120"/>
+            <Button
+                android:id="@+id/stroke_120"
+                style="@style/Item.Path"
+                android:text="120"
+                android:textColor="@color/path_orange"
+                app:arc_angle="150"/>
+            <Button
+                android:id="@+id/stroke_150"
+                style="@style/Item.Path"
+                android:text="150"
+                android:textColor="@color/path_orange"
+                app:arc_angle="180"/>
+            <Button
+                android:id="@+id/stroke_180"
+                style="@style/Item.Path"
+                android:text="180"
+                android:textColor="@color/path_orange"
+                app:arc_angle="210"/>
+            <Button
+                android:id="@+id/stroke_210"
+                style="@style/Item.Path"
+                android:text="210"
+                android:textColor="@color/path_orange"
+                app:arc_angle="240"/>
+            <Button
+                android:id="@+id/stroke_240"
+                style="@style/Item.Path"
+                android:text="240"
+                android:textColor="@color/path_orange"
+                app:arc_angle="270"/>
+            <Button
+                android:id="@+id/stroke_270"
+                style="@style/Item.Path"
+                android:text="270"
+                android:textColor="@color/path_orange"
+                app:arc_angle="300"/>
+            <Button
+                android:id="@+id/stroke_300"
+                style="@style/Item.Path"
+                android:text="300"
+                android:textColor="@color/path_orange"
+                app:arc_angle="330"/>
+
+        </com.ogaclejapan.arclayout.ArcLayout>
+    </FrameLayout>
+
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/tools"
         android:layout_width="106dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
-        fab:fab_addButtonColorNormal="@color/white"
-        fab:fab_addButtonColorPressed="@color/white_pressed"
-        fab:fab_addButtonPlusIconColor="@color/half_black"
-        fab:fab_labelStyle="@style/menu_labels_style" />
+        app:fab_addButtonColorNormal="@color/white"
+        app:fab_addButtonColorPressed="@color/white_pressed"
+        app:fab_addButtonPlusIconColor="@color/half_black"
+        app:fab_labelStyle="@style/menu_labels_style" />
 </RelativeLayout>

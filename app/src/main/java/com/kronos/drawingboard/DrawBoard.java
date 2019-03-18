@@ -1,41 +1,67 @@
 package com.kronos.drawingboard;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AnticipateInterpolator;
+import android.view.animation.OvershootInterpolator;
+import android.widget.Button;
 import android.widget.Toast;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-
+import com.ogaclejapan.arclayout.ArcLayout;
+import java.util.ArrayList;
+import java.util.List;
 import me.panavtec.drawableview.DrawableView;
 import me.panavtec.drawableview.DrawableViewConfig;
 
 public class DrawBoard extends AppCompatActivity {
+    private FloatingActionsMenu toolMenu = null;
+    private DrawableViewConfig configPen = null;
+    private DrawableViewConfig configEra = null;
+    private DrawableView m_Draw = null;
+    private Tools m_Tools = null;
+    private ArcLayout arcLayout = null;
+    private View menuLayout = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_draw_board);
-        Tools m_Tools = new Tools(this);
+        init();
+        m_Tools = new Tools(this);
         setTools(m_Tools);
         setToolsAction(m_Tools);
-        init();
     }
 
     protected void init(){
-        DrawableView m_Draw = (DrawableView) findViewById(R.id.paintView);
-        DrawableViewConfig config = new DrawableViewConfig();
-        config.setStrokeColor(getResources().getColor(android.R.color.black));
-        config.setShowCanvasBounds(true); // If the view is bigger than canvas, with this the user will see the bounds (Recommended)
-        config.setStrokeWidth(20.0f);
-        config.setMinZoom(1.0f);
-        config.setMaxZoom(3.0f);
-        config.setCanvasHeight(1920);
-        config.setCanvasWidth(1080);
-        m_Draw.setConfig(config);
+        m_Draw = (DrawableView) findViewById(R.id.paintView);
+        configPen = new DrawableViewConfig();
+        configPen.setStrokeColor(getResources().getColor(android.R.color.black));
+        configPen.setShowCanvasBounds(true);
+        configPen.setStrokeWidth(10.0f);
+        configPen.setMinZoom(1.0f);
+        configPen.setMaxZoom(3.0f);
+        configPen.setCanvasHeight(1920);
+        configPen.setCanvasWidth(1080);
+        configEra = new DrawableViewConfig();
+        configEra.setStrokeColor(getResources().getColor(android.R.color.white));
+        configEra.setShowCanvasBounds(true);
+        configEra.setStrokeWidth(10.0f);
+        configEra.setMinZoom(1.0f);
+        configEra.setMaxZoom(3.0f);
+        configEra.setCanvasHeight(1920);
+        configEra.setCanvasWidth(1080);
+        m_Draw.setConfig(configPen);
+        menuLayout = findViewById(R.id.menu_layout);
+        arcLayout = (ArcLayout) findViewById(R.id.arc_layout);
     }
 
     protected void setTools(Tools tools){
-        FloatingActionsMenu toolMenu = (FloatingActionsMenu) findViewById(R.id.tools);
+        toolMenu = (FloatingActionsMenu) findViewById(R.id.tools);
         toolMenu.addButton(tools.setToolStyle(tools.getPen(),getDrawable(R.drawable.pen)));
         toolMenu.addButton(tools.setToolStyle(tools.getEraser(),getDrawable(R.drawable.eraser)));
         toolMenu.addButton(tools.setToolStyle(tools.getUndo(),getDrawable(R.drawable.undo)));
@@ -44,12 +70,20 @@ public class DrawBoard extends AppCompatActivity {
         toolMenu.addButton(tools.setToolStyle(tools.getDelete(),getDrawable(R.drawable.delete)));
     }
 
-    protected void setToolsAction(Tools tools){
+    protected void setToolsAction(final Tools tools){
         tools.getPen().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(DrawBoard.this,"pen",Toast.LENGTH_SHORT).show();
                 /* use pen */
+                m_Draw.setConfig(configPen);
+            }
+        });
+        tools.getPen().setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                setPenSize(v,configPen);
+                return false;
             }
         });
         tools.getEraser().setOnClickListener(new View.OnClickListener() {
@@ -57,6 +91,15 @@ public class DrawBoard extends AppCompatActivity {
             public void onClick(View v) {
                 Toast.makeText(DrawBoard.this,"eraser",Toast.LENGTH_SHORT).show();
                 /* use eraser */
+                m_Draw.setConfig(configEra);
+            }
+        });
+        tools.getEraser().setOnLongClickListener(new View.OnLongClickListener() {
+                /* set eraser size */
+            @Override
+            public boolean onLongClick(View v) {
+                setPenSize(v,configEra);
+                return false;
             }
         });
         tools.getUndo().setOnClickListener(new View.OnClickListener() {
@@ -64,6 +107,7 @@ public class DrawBoard extends AppCompatActivity {
             public void onClick(View v) {
                 Toast.makeText(DrawBoard.this,"undo",Toast.LENGTH_SHORT).show();
                 /* use undo */
+                m_Draw.undo();
             }
         });
         tools.getSelectColor().setOnClickListener(new View.OnClickListener() {
@@ -85,7 +129,109 @@ public class DrawBoard extends AppCompatActivity {
             public void onClick(View v) {
                 Toast.makeText(DrawBoard.this,"delete",Toast.LENGTH_SHORT).show();
                 /* use delete */
+                m_Draw.clear();
             }
         });
+    }
+
+    protected void showPenSize(View v){
+        if (v.isSelected()){
+            /* hide */
+            hidePenMenu();
+        }
+        else {
+            /* show */
+            showPenMenu();
+        }
+    }
+
+    protected void setPenSize(View v, final DrawableViewConfig config){
+        Toast.makeText(DrawBoard.this,"set pen size",Toast.LENGTH_SHORT).show();
+        /* set pen size */
+        toolMenu.toggle();
+        showPenSize(v);
+        for (int i = 0, size = arcLayout.getChildCount(); i < size; i++) {
+            arcLayout.getChildAt(i).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Button btn = (Button)v;
+                    config.setStrokeWidth(Float.valueOf(btn.getText().toString()));
+                    m_Draw.setConfig(config);
+                    hidePenMenu();
+                    toolMenu.expand();
+                }
+            });
+        }
+    }
+
+    protected void hidePenMenu(){
+        List<Animator> animatorList = new ArrayList<>();
+        for (int i = arcLayout.getChildCount() - 1; i >= 0; i--) {
+            animatorList.add(createHideItemAnimator(arcLayout.getChildAt(i)));
+        }
+
+        AnimatorSet animSet = new AnimatorSet();
+        animSet.setDuration(400);
+        animSet.setInterpolator(new AnticipateInterpolator());
+        animSet.playTogether(animatorList);
+        animSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                menuLayout.setVisibility(View.INVISIBLE);
+            }
+        });
+        animSet.start();
+    }
+
+    protected void showPenMenu(){
+        menuLayout.setVisibility(View.VISIBLE);
+        List<Animator> animatorList = new ArrayList<>();
+        for (int i = 0, len = arcLayout.getChildCount(); i < len; i++) {
+            animatorList.add(createShowItemAnimator(arcLayout.getChildAt(i)));
+        }
+        AnimatorSet animSet = new AnimatorSet();
+        animSet.setDuration(400);
+        animSet.setInterpolator(new OvershootInterpolator());
+        animSet.playTogether(animatorList);
+        animSet.start();
+    }
+
+    protected Animator createShowItemAnimator(View item) {
+        float dx = toolMenu.getX() - item.getX();
+        float dy = toolMenu.getY() - item.getY();
+        item.setRotation(0f);
+        item.setTranslationX(dx);
+        item.setTranslationY(dy);
+
+        Animator anim = ObjectAnimator.ofPropertyValuesHolder(
+                item,
+                AnimatorUtils.rotation(0f, 720f),
+                AnimatorUtils.translationX(dx, 0f),
+                AnimatorUtils.translationY(dy, 0f)
+        );
+        return anim;
+    }
+
+    protected Animator createHideItemAnimator(final View item) {
+        float dx = toolMenu.getX() - item.getX();
+        float dy = toolMenu.getY() - item.getY();
+
+        Animator anim = ObjectAnimator.ofPropertyValuesHolder(
+                item,
+                AnimatorUtils.rotation(720f, 0f),
+                AnimatorUtils.translationX(0f, dx),
+                AnimatorUtils.translationY(0f, dy)
+        );
+
+        anim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                item.setTranslationX(0f);
+                item.setTranslationY(0f);
+            }
+        });
+        return anim;
     }
 }
