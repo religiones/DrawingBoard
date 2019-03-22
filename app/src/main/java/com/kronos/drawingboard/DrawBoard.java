@@ -56,6 +56,7 @@ public class DrawBoard extends AppCompatActivity {
         toolMenu.addButton(tools.setToolStyle(tools.getPen(), getDrawable(R.drawable.pen)));
         toolMenu.addButton(tools.setToolStyle(tools.getEraser(), getDrawable(R.drawable.eraser)));
         toolMenu.addButton(tools.setToolStyle(tools.getUndo(), getDrawable(R.drawable.undo)));
+        toolMenu.addButton(tools.setToolStyle(tools.getImg(),getDrawable(R.drawable.img)));
         toolMenu.addButton(tools.setToolStyle(tools.getSelectColor(), getDrawable(R.drawable.color)));
         toolMenu.addButton(tools.setToolStyle(tools.getSave(), getDrawable(R.drawable.save)));
         toolMenu.addButton(tools.setToolStyle(tools.getDelete(), getDrawable(R.drawable.delete)));
@@ -71,6 +72,7 @@ public class DrawBoard extends AppCompatActivity {
             }
         });
         tools.getPen().setOnLongClickListener(new View.OnLongClickListener() {
+            /* set pen size */
             @Override
             public boolean onLongClick(View v) {
                 setPenSize(v, m_Draw, DrawingMode.DRAW);
@@ -78,9 +80,9 @@ public class DrawBoard extends AppCompatActivity {
             }
         });
         tools.getEraser().setOnClickListener(new View.OnClickListener() {
+            /* use eraser */
             @Override
             public void onClick(View v) {
-                /* use eraser */
                 m_Draw.setDrawingMode(DrawingMode.ERASER);
                 m_Draw.setDrawWidth(toolSize[1]);
             }
@@ -94,16 +96,22 @@ public class DrawBoard extends AppCompatActivity {
             }
         });
         tools.getUndo().setOnClickListener(new View.OnClickListener() {
+            /* use undo */
             @Override
             public void onClick(View v) {
-                /* use undo */
                 m_Draw.undo();
             }
         });
-        tools.getSelectColor().setOnClickListener(new View.OnClickListener() {
+        tools.getImg().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /* use selectColor */
+
+            }
+        });
+        tools.getSelectColor().setOnClickListener(new View.OnClickListener() {
+            /* use selectColor */
+            @Override
+            public void onClick(View v) {
                 ColorPickerDialogBuilder
                         .with(DrawBoard.this)
                         .setTitle("Choose color")
@@ -125,9 +133,9 @@ public class DrawBoard extends AppCompatActivity {
             }
         });
         tools.getSave().setOnClickListener(new View.OnClickListener() {
+            /* use save */
             @Override
             public void onClick(View v) {
-                /* use save */
                 String[] PERMISSIONS = {
                         "android.permission.READ_EXTERNAL_STORAGE",
                         "android.permission.WRITE_EXTERNAL_STORAGE",
@@ -145,9 +153,9 @@ public class DrawBoard extends AppCompatActivity {
             }
         });
         tools.getDelete().setOnClickListener(new View.OnClickListener() {
+            /* use delete */
             @Override
             public void onClick(View v) {
-                /* use delete */
                 new SweetAlertDialog(DrawBoard.this, SweetAlertDialog.WARNING_TYPE)
                         .setTitleText("Are you sure?")
                         .setContentText("Won't be able to recover this picture!")

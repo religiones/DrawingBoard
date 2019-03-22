@@ -12,9 +12,12 @@ public class Tools {
     final static int SELECTCOLOR = 0x1004;
     final static int SAVE = 0x1005;
     final static int DELETE = 0x1006;
+    final static int IMG= 0x1007;
+
     private FloatingActionButton pen;
     private FloatingActionButton eraser;
     private FloatingActionButton undo;
+    private FloatingActionButton img;
     private FloatingActionButton selectColor;
     private FloatingActionButton save;
     private FloatingActionButton delete;
@@ -26,6 +29,8 @@ public class Tools {
         eraser.setId(ERASER);
         undo = new FloatingActionButton(context);
         undo.setId(UNDO);
+        img = new FloatingActionButton(context);
+        img.setId(IMG);
         selectColor = new FloatingActionButton(context);
         selectColor.setId(SELECTCOLOR);
         save = new FloatingActionButton(context);
@@ -42,6 +47,9 @@ public class Tools {
     }
     public void setUndo(FloatingActionButton undo) {
         this.undo = undo;
+    }
+    public void setImg(FloatingActionButton img) {
+        this.img = img;
     }
     public void setSelectColor(FloatingActionButton selectColor) {
         this.selectColor = selectColor;
@@ -60,6 +68,9 @@ public class Tools {
     }
     public FloatingActionButton getUndo() {
         return undo;
+    }
+    public FloatingActionButton getImg() {
+        return img;
     }
     public FloatingActionButton getSelectColor() {
         return selectColor;
