@@ -23,7 +23,6 @@ import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.ogaclejapan.arclayout.ArcLayout;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +33,7 @@ public class DrawBoard extends AppCompatActivity {
     private ArcLayout arcLayout = null;
     private View menuLayout = null;
     private DrawView m_Draw = null;
+    private int[] toolSize = {10,10};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +67,7 @@ public class DrawBoard extends AppCompatActivity {
             public void onClick(View v) {
                 /* use pen */
                 m_Draw.setDrawingMode(DrawingMode.DRAW);
+                m_Draw.setDrawWidth(toolSize[0]);
             }
         });
         tools.getPen().setOnLongClickListener(new View.OnLongClickListener() {
@@ -81,6 +82,7 @@ public class DrawBoard extends AppCompatActivity {
             public void onClick(View v) {
                 /* use eraser */
                 m_Draw.setDrawingMode(DrawingMode.ERASER);
+                m_Draw.setDrawWidth(toolSize[1]);
             }
         });
         tools.getEraser().setOnLongClickListener(new View.OnLongClickListener() {
@@ -197,8 +199,10 @@ public class DrawBoard extends AppCompatActivity {
                     Button btn = (Button) v;
                     if (drawingMode.equals(DrawingMode.ERASER)){
                         drawView.setDrawingMode(DrawingMode.ERASER).setDrawWidth(Integer.valueOf(btn.getText().toString()));
+                        toolSize[1] = Integer.valueOf(btn.getText().toString());
                     }else {
                         drawView.setDrawingMode(DrawingMode.DRAW).setDrawWidth(Integer.valueOf(btn.getText().toString()));
+                        toolSize[0] = Integer.valueOf(btn.getText().toString());
                     }
                     hidePenMenu();
                     toolMenu.setVisibility(View.VISIBLE);
