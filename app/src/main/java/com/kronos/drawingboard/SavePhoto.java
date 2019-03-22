@@ -7,9 +7,9 @@ import android.graphics.Matrix;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,10 +18,8 @@ import java.io.IOException;
 import java.text.ParseException;
 
 public class SavePhoto {
-        Context context;
 
-        public SavePhoto(Context context) {
-            this.context = context;
+    public SavePhoto() {
         }
 
     public void SaveBitmapFromView(View view, Context context) throws ParseException {
@@ -31,14 +29,12 @@ public class SavePhoto {
         Canvas c = new Canvas(bmp);
         view.layout(0, 0, w, h);
         view.draw(c);
-        // 缩小图片
         Matrix matrix = new Matrix();
         matrix.postScale(0.5f,0.5f);
         bmp = Bitmap.createBitmap(bmp,0,0,bmp.getWidth(),bmp.getHeight(),matrix,true);
         String path = saveBitmap(bmp,System.currentTimeMillis() + ".JPEG");
         refreshFile(path, context);
     }
-
 
     public String saveBitmap(Bitmap bitmap, String bitName){
         String fileName ;
@@ -73,18 +69,16 @@ public class SavePhoto {
         return file.getAbsolutePath();
     }
 
-
-    public void refreshFile(String filePath, Context mContext) {
+    public void refreshFile(String filePath, Context context) {
         File file = new File(filePath);
         MimeTypeMap mtm = MimeTypeMap.getSingleton();
-        MediaScannerConnection.scanFile(mContext, new String[] { file.toString() }, new String[] { mtm.getMimeTypeFromExtension(file.toString().substring(file.toString().lastIndexOf(".")+1)) },
+        MediaScannerConnection.scanFile(context, new String[] { file.toString() }, new String[] { mtm.getMimeTypeFromExtension(file.toString().substring(file.toString().lastIndexOf(".")+1)) },
                 new MediaScannerConnection.OnScanCompletedListener() {
                     @Override
                     public void onScanCompleted(final String path, final Uri uri) {
-                        Log.d("", "刷新完毕");
                     }
                 });
+        Toast.makeText(context,"The picture has been saved ",Toast.LENGTH_SHORT).show();
     }
-
 }
 

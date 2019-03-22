@@ -32,4 +32,6 @@ dependencies {
     implementation 'me.panavtec:drawableview:0.6.0'
     implementation 'com.ogaclejapan.arclayout:library:1.1.0@aar'
     implementation 'com.github.QuadFlask:colorpicker:0.0.13'
+    implementation 'com.github.cazaea:sweet-alert-dialog:1.0.0'
+    implementation 'com.github.1993hzw:Doodle:5.4.0.2'
 }

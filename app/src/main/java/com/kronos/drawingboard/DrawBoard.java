@@ -4,14 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -19,26 +15,17 @@ import android.view.View;
 import android.view.animation.AnticipateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
-import android.widget.Toast;
-
+import com.cazaea.sweetalert.SweetAlertDialog;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.ogaclejapan.arclayout.ArcLayout;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-
 import me.panavtec.drawableview.DrawableView;
 import me.panavtec.drawableview.DrawableViewConfig;
-
-import static android.graphics.Bitmap.createBitmap;
 
 public class DrawBoard extends AppCompatActivity {
     private FloatingActionsMenu toolMenu = null;
@@ -71,12 +58,12 @@ public class DrawBoard extends AppCompatActivity {
         configPen.setCanvasWidth(1080);
         configEra = new DrawableViewConfig();
         configEra.setStrokeColor(getResources().getColor(android.R.color.white));
-        configEra.setShowCanvasBounds(true);
         configEra.setStrokeWidth(10.0f);
         configEra.setMinZoom(1.0f);
         configEra.setMaxZoom(3.0f);
         configEra.setCanvasHeight(1920);
         configEra.setCanvasWidth(1080);
+        configEra.setShowCanvasBounds(false);
         m_Draw.setConfig(configPen);
         menuLayout = findViewById(R.id.menu_layout);
         arcLayout = (ArcLayout) findViewById(R.id.arc_layout);
@@ -166,7 +153,7 @@ public class DrawBoard extends AppCompatActivity {
                         ActivityCompat.requestPermissions(DrawBoard.this, PERMISSIONS, 1);
                 }
                 try {
-                    SavePhoto savePhoto = new SavePhoto(DrawBoard.this);
+                    SavePhoto savePhoto = new SavePhoto();
                     m_Draw.setBackgroundColor(Color.WHITE);
                     savePhoto.SaveBitmapFromView(m_Draw,DrawBoard.this);
                 } catch (ParseException e) {
@@ -178,7 +165,32 @@ public class DrawBoard extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 /* use delete */
-                m_Draw.clear();
+                new SweetAlertDialog(DrawBoard.this, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Are you sure?")
+                        .setContentText("Won't be able to recover this picture!")
+                        .showCancelButton(true)
+                        .setCancelText("No")
+                        .setConfirmText("Yes")
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                m_Draw.clear();
+                                sDialog
+                                        .setTitleText("Deleted!")
+                                        .setContentText("Your picture has been deleted!")
+                                        .showCancelButton(false)
+                                        .setConfirmText("OK")
+                                        .setConfirmClickListener(null)
+                                        .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                            }
+                        })
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                sDialog.cancel();
+                            }
+                        })
+                        .show();
             }
         });
     }
@@ -194,9 +206,9 @@ public class DrawBoard extends AppCompatActivity {
     }
 
     protected void setPenSize(View v, final DrawableViewConfig config) {
-        Toast.makeText(DrawBoard.this, "set pen size", Toast.LENGTH_SHORT).show();
         /* set pen size */
         toolMenu.toggle();
+        toolMenu.setVisibility(View.GONE);
         showPenSize(v);
         for (int i = 0, size = arcLayout.getChildCount(); i < size; i++) {
             arcLayout.getChildAt(i).setOnClickListener(new View.OnClickListener() {
@@ -206,13 +218,14 @@ public class DrawBoard extends AppCompatActivity {
                     config.setStrokeWidth(Float.valueOf(btn.getText().toString()));
                     m_Draw.setConfig(config);
                     hidePenMenu();
-                    toolMenu.expand();
+                    toolMenu.setVisibility(View.VISIBLE);
                 }
             });
         }
     }
 
     protected void hidePenMenu() {
+        m_Draw.setEnabled(true);
         List<Animator> animatorList = new ArrayList<>();
         for (int i = arcLayout.getChildCount() - 1; i >= 0; i--) {
             animatorList.add(createHideItemAnimator(arcLayout.getChildAt(i)));
@@ -234,6 +247,7 @@ public class DrawBoard extends AppCompatActivity {
 
     protected void showPenMenu() {
         menuLayout.setVisibility(View.VISIBLE);
+        m_Draw.setEnabled(false);
         List<Animator> animatorList = new ArrayList<>();
         for (int i = 0, len = arcLayout.getChildCount(); i < len; i++) {
             animatorList.add(createShowItemAnimator(arcLayout.getChildAt(i)));
