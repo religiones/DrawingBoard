@@ -15,26 +15,25 @@ import android.view.View;
 import android.view.animation.AnticipateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
+import com.byox.drawview.enums.DrawingMode;
+import com.byox.drawview.views.DrawView;
 import com.cazaea.sweetalert.SweetAlertDialog;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.ogaclejapan.arclayout.ArcLayout;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import me.panavtec.drawableview.DrawableView;
-import me.panavtec.drawableview.DrawableViewConfig;
 
 public class DrawBoard extends AppCompatActivity {
     private FloatingActionsMenu toolMenu = null;
-    private DrawableViewConfig configPen = null;
-    private DrawableViewConfig configEra = null;
-    private DrawableView m_Draw = null;
     private Tools m_Tools = null;
     private ArcLayout arcLayout = null;
     private View menuLayout = null;
+    private DrawView m_Draw = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,24 +46,7 @@ public class DrawBoard extends AppCompatActivity {
     }
 
     protected void init() {
-        m_Draw = (DrawableView) findViewById(R.id.paintView);
-        configPen = new DrawableViewConfig();
-        configPen.setStrokeColor(getResources().getColor(android.R.color.black));
-        configPen.setShowCanvasBounds(true);
-        configPen.setStrokeWidth(10.0f);
-        configPen.setMinZoom(1.0f);
-        configPen.setMaxZoom(3.0f);
-        configPen.setCanvasHeight(1920);
-        configPen.setCanvasWidth(1080);
-        configEra = new DrawableViewConfig();
-        configEra.setStrokeColor(getResources().getColor(android.R.color.white));
-        configEra.setStrokeWidth(10.0f);
-        configEra.setMinZoom(1.0f);
-        configEra.setMaxZoom(3.0f);
-        configEra.setCanvasHeight(1920);
-        configEra.setCanvasWidth(1080);
-        configEra.setShowCanvasBounds(false);
-        m_Draw.setConfig(configPen);
+        m_Draw = (DrawView) findViewById(R.id.draw_view);
         menuLayout = findViewById(R.id.menu_layout);
         arcLayout = (ArcLayout) findViewById(R.id.arc_layout);
     }
@@ -84,13 +66,13 @@ public class DrawBoard extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 /* use pen */
-                m_Draw.setConfig(configPen);
+                m_Draw.setDrawingMode(DrawingMode.DRAW);
             }
         });
         tools.getPen().setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                setPenSize(v, configPen);
+                setPenSize(v, m_Draw, DrawingMode.DRAW);
                 return false;
             }
         });
@@ -98,14 +80,14 @@ public class DrawBoard extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 /* use eraser */
-                m_Draw.setConfig(configEra);
+                m_Draw.setDrawingMode(DrawingMode.ERASER);
             }
         });
         tools.getEraser().setOnLongClickListener(new View.OnLongClickListener() {
             /* set eraser size */
             @Override
             public boolean onLongClick(View v) {
-                setPenSize(v, configEra);
+                setPenSize(v,m_Draw, DrawingMode.ERASER);
                 return false;
             }
         });
@@ -128,8 +110,7 @@ public class DrawBoard extends AppCompatActivity {
                         .setPositiveButton("ok", new ColorPickerClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
-                                configPen.setStrokeColor(selectedColor);
-                                m_Draw.setConfig(configPen);
+                                m_Draw.setDrawingMode(DrawingMode.DRAW).setDrawColor(selectedColor);
                             }
                         })
                         .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -174,14 +155,13 @@ public class DrawBoard extends AppCompatActivity {
                         .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                             @Override
                             public void onClick(SweetAlertDialog sDialog) {
-                                m_Draw.clear();
-                                sDialog
-                                        .setTitleText("Deleted!")
+                                sDialog.setTitleText("Deleted!")
                                         .setContentText("Your picture has been deleted!")
                                         .showCancelButton(false)
                                         .setConfirmText("OK")
                                         .setConfirmClickListener(null)
                                         .changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
+                                m_Draw.restartDrawing();
                             }
                         })
                         .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
@@ -205,7 +185,7 @@ public class DrawBoard extends AppCompatActivity {
         }
     }
 
-    protected void setPenSize(View v, final DrawableViewConfig config) {
+    protected void setPenSize(View v, final DrawView drawView, final DrawingMode drawingMode) {
         /* set pen size */
         toolMenu.toggle();
         toolMenu.setVisibility(View.GONE);
@@ -215,8 +195,11 @@ public class DrawBoard extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Button btn = (Button) v;
-                    config.setStrokeWidth(Float.valueOf(btn.getText().toString()));
-                    m_Draw.setConfig(config);
+                    if (drawingMode.equals(DrawingMode.ERASER)){
+                        drawView.setDrawingMode(DrawingMode.ERASER).setDrawWidth(Integer.valueOf(btn.getText().toString()));
+                    }else {
+                        drawView.setDrawingMode(DrawingMode.DRAW).setDrawWidth(Integer.valueOf(btn.getText().toString()));
+                    }
                     hidePenMenu();
                     toolMenu.setVisibility(View.VISIBLE);
                 }
