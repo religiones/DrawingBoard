@@ -29,7 +29,6 @@ import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.ogaclejapan.arclayout.ArcLayout;
-import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +40,7 @@ public class DrawBoard extends AppCompatActivity {
     private View menuLayout = null;
     private DrawView m_Draw = null;
     private int[] toolSize = {10,10};
+    private int color = Color.WHITE;
     private Intent intent = null;
 
     @Override
@@ -145,11 +145,13 @@ public class DrawBoard extends AppCompatActivity {
                         .setTitle("Choose color")
                         .wheelType(ColorPickerView.WHEEL_TYPE.CIRCLE)
                         .density(6)
+                        .initialColor(color)
                         .showAlphaSlider(false)
                         .setPositiveButton("ok", new ColorPickerClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
                                 m_Draw.setDrawColor(selectedColor);
+                                color = selectedColor;
                             }
                         })
                         .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
