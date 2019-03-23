@@ -5,8 +5,12 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -15,6 +19,8 @@ import android.view.View;
 import android.view.animation.AnticipateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
+import com.byox.drawview.enums.BackgroundScale;
+import com.byox.drawview.enums.BackgroundType;
 import com.byox.drawview.enums.DrawingMode;
 import com.byox.drawview.views.DrawView;
 import com.cazaea.sweetalert.SweetAlertDialog;
@@ -23,6 +29,7 @@ import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.ogaclejapan.arclayout.ArcLayout;
+import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +41,7 @@ public class DrawBoard extends AppCompatActivity {
     private View menuLayout = null;
     private DrawView m_Draw = null;
     private int[] toolSize = {10,10};
+    private File img = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +50,13 @@ public class DrawBoard extends AppCompatActivity {
         init();
         m_Tools = new Tools(this);
         setTools(m_Tools);
+        String[] PERMISSIONS = {
+                "android.permission.READ_EXTERNAL_STORAGE",
+                "android.permission.WRITE_EXTERNAL_STORAGE",
+                "android.permission.MOUNT_FORMAT_FILESYSTEMS"};
+        if (ContextCompat.checkSelfPermission(DrawBoard.this, "android.permission.WRITE_EXTERNAL_STORAGE") != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(DrawBoard.this, PERMISSIONS, 1);
+        }
         setToolsAction(m_Tools);
     }
 
@@ -103,9 +118,13 @@ public class DrawBoard extends AppCompatActivity {
             }
         });
         tools.getImg().setOnClickListener(new View.OnClickListener() {
+            /* get image */
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("image/*");
+                startActivityForResult(intent, 100);
             }
         });
         tools.getSelectColor().setOnClickListener(new View.OnClickListener() {
@@ -136,13 +155,6 @@ public class DrawBoard extends AppCompatActivity {
             /* use save */
             @Override
             public void onClick(View v) {
-                String[] PERMISSIONS = {
-                        "android.permission.READ_EXTERNAL_STORAGE",
-                        "android.permission.WRITE_EXTERNAL_STORAGE",
-                        "android.permission.MOUNT_FORMAT_FILESYSTEMS"};
-                if (ContextCompat.checkSelfPermission(DrawBoard.this, "android.permission.WRITE_EXTERNAL_STORAGE") != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(DrawBoard.this, PERMISSIONS, 1);
-                }
                 try {
                     SavePhoto savePhoto = new SavePhoto();
                     m_Draw.setBackgroundColor(Color.WHITE);
@@ -291,5 +303,26 @@ public class DrawBoard extends AppCompatActivity {
         });
         return anim;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case 100:
+                    try {
+                        final Uri imageUri = data.getData();
+                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        m_Draw.setBackgroundImage(bitmap,BackgroundType.BITMAP,BackgroundScale.CENTER_INSIDE);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
 }
 
