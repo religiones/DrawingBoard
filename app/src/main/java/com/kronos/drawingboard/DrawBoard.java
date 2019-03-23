@@ -145,6 +145,7 @@ public class DrawBoard extends AppCompatActivity {
                         .setTitle("Choose color")
                         .wheelType(ColorPickerView.WHEEL_TYPE.CIRCLE)
                         .density(6)
+                        .showAlphaSlider(false)
                         .setPositiveButton("ok", new ColorPickerClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
