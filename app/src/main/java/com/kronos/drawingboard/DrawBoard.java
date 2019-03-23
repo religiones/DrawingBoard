@@ -41,7 +41,7 @@ public class DrawBoard extends AppCompatActivity {
     private View menuLayout = null;
     private DrawView m_Draw = null;
     private int[] toolSize = {10,10};
-    private File img = null;
+    private Intent intent = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +72,7 @@ public class DrawBoard extends AppCompatActivity {
         toolMenu.addButton(tools.setToolStyle(tools.getEraser(), getDrawable(R.drawable.eraser)));
         toolMenu.addButton(tools.setToolStyle(tools.getUndo(), getDrawable(R.drawable.undo)));
         toolMenu.addButton(tools.setToolStyle(tools.getImg(),getDrawable(R.drawable.img)));
+        toolMenu.addButton(tools.setToolStyle(tools.getShare(),getDrawable(R.drawable.share)));
         toolMenu.addButton(tools.setToolStyle(tools.getSelectColor(), getDrawable(R.drawable.color)));
         toolMenu.addButton(tools.setToolStyle(tools.getSave(), getDrawable(R.drawable.save)));
         toolMenu.addButton(tools.setToolStyle(tools.getDelete(), getDrawable(R.drawable.delete)));
@@ -121,10 +122,18 @@ public class DrawBoard extends AppCompatActivity {
             /* get image */
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("image/*");
+                m_Draw.restartDrawing();
                 startActivityForResult(intent, 100);
+            }
+        });
+        tools.getShare().setOnClickListener(new View.OnClickListener() {
+            /* use share */
+            @Override
+            public void onClick(View v) {
+
             }
         });
         tools.getSelectColor().setOnClickListener(new View.OnClickListener() {
@@ -139,7 +148,7 @@ public class DrawBoard extends AppCompatActivity {
                         .setPositiveButton("ok", new ColorPickerClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
-                                m_Draw.setDrawingMode(DrawingMode.DRAW).setDrawColor(selectedColor);
+                                m_Draw.setDrawColor(selectedColor);
                             }
                         })
                         .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
