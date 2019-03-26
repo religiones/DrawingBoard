@@ -72,7 +72,7 @@ public class DrawBoard extends AppCompatActivity {
         toolMenu.addButton(tools.setToolStyle(tools.getEraser(), getDrawable(R.drawable.eraser)));
         toolMenu.addButton(tools.setToolStyle(tools.getUndo(), getDrawable(R.drawable.undo)));
         toolMenu.addButton(tools.setToolStyle(tools.getImg(),getDrawable(R.drawable.img)));
-        toolMenu.addButton(tools.setToolStyle(tools.getShare(),getDrawable(R.drawable.share)));
+//        toolMenu.addButton(tools.setToolStyle(tools.getShare(),getDrawable(R.drawable.share)));
         toolMenu.addButton(tools.setToolStyle(tools.getSelectColor(), getDrawable(R.drawable.color)));
         toolMenu.addButton(tools.setToolStyle(tools.getSave(), getDrawable(R.drawable.save)));
         toolMenu.addButton(tools.setToolStyle(tools.getDelete(), getDrawable(R.drawable.delete)));
@@ -129,13 +129,13 @@ public class DrawBoard extends AppCompatActivity {
                 startActivityForResult(intent, 100);
             }
         });
-        tools.getShare().setOnClickListener(new View.OnClickListener() {
-            /* use share */
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+//        tools.getShare().setOnClickListener(new View.OnClickListener() {
+//            /* use share */
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
         tools.getSelectColor().setOnClickListener(new View.OnClickListener() {
             /* use selectColor */
             @Override

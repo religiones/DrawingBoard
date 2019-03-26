@@ -1,4 +1,0 @@
-#Thu Mar 14 22:31:24 CST 2019
-base.0=F\:\\AndroidProject\\ScaleSketchPadDemo\\app2\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main
-renamed.0=classes.dex
-file.0=F\:\\AndroidProject\\ScaleSketchPadDemo\\app2\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main\\classes.dex
