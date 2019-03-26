@@ -52,8 +52,7 @@ public class DrawBoard extends AppCompatActivity {
         setTools(m_Tools);
         String[] PERMISSIONS = {
                 "android.permission.READ_EXTERNAL_STORAGE",
-                "android.permission.WRITE_EXTERNAL_STORAGE",
-                "android.permission.MOUNT_FORMAT_FILESYSTEMS"};
+                "android.permission.WRITE_EXTERNAL_STORAGE"};
         if (ContextCompat.checkSelfPermission(DrawBoard.this, "android.permission.WRITE_EXTERNAL_STORAGE") != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(DrawBoard.this, PERMISSIONS, 1);
         }
